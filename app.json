@@ -1,0 +1,23 @@
+{
+  "apps": [
+    {
+      "name": "koa2",
+      "cwd": "./",
+      "script": "log4.js",
+      "log_date_format": "YYYY-MM-DD HH:mm Z",
+      "error_file": "logs/koa-error.log",
+      "out_file": "logs/koa.stdout.log",
+      "watch_options": {
+        "followSymlinks": false
+      },
+      "merge_logs": true,
+      "exec_interpreter": "node",
+      "exec_mode": "fork",
+      "autorestart": true,
+      "vizion": false,
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}

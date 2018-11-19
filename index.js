@@ -10,9 +10,4 @@ app.use( async (ctx) => {
   let url = ctx.request.url
   ctx.body = url
 })
-
-// 封装路由
-
-function
-
 app.listen(3000)

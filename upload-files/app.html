@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html {{ HTML_ATTRS }}>
+<head>
+  {{ HEAD }}
+  
+<!-- GrowingIO Analytics code version 2.1 -->
+<!-- Copyright 2015-2018 GrowingIO, Inc. More info available at http://www.growingio.com -->
+
+  <script type='text/javascript'>
+    !function(e,t,n,g,i){e[i]=e[i]||function(){(e[i].q=e[i].q||[]).push(arguments)},n=t.createElement("script"),tag=t.getElementsByTagName("script")[0],n.async=1,n.src=('https:'==document.location.protocol?'https://':'http://')+g,tag.parentNode.insertBefore(n,tag)}(window,document,"script","assets.growingio.com/2.1/gio.js","gio");
+      gio('init','ad951af9bd2b13f6', {});
+    
+    //custom page code begin here
+    
+    //custom page code end here
+    
+    gio('send');
+  
+  </script>
+  
+  <!-- End GrowingIO Analytics code version: 2.1 -->
+  
+  <script>
+    window.onerror = function (errorMessage, scriptURI, lineNumber, columnNumber, errorObj) {
+      var requestMessage = location.href + ' '
+        + errorMessage + ' '
+        + scriptURI + ' '
+        + lineNumber + ' '
+        + columnNumber + ' '
+        + JSON.stringify(errorObj) + ' '
+        + navigator.userAgent;
+
+      new Image().src = "/error/reporter?err=" + encodeURIComponent(requestMessage);
+    }
+  </script>
+</head>
+<body {{ BODY_ATTRS }} class="response-normal" ref="body">
+{{ APP }}
+<script type="text/javascript" src="/int/js/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/int/js/jquery/jquery.gatracker.js"></script>
+<script type="text/javascript" src="/int/js/tracker.js"></script>
+<script>
+  $(document).ready(function () {
+    window.adsk.drgTracker.createTracker();
+  });
+  /**
+   * 自适应各屏幕样式处理
+   * 各分辨率样式（default: narrow  >1440: wider）
+   */
+  function resizeWindow () {
+    if (!document.body) {
+      return
+    }
+    var cls = "response-normal";
+    if (document.body.clientWidth > 1500) {
+      cls = 'response-wider'
+    } else if (document.body.clientWidth > 1250) {
+      cls = 'response-normal'
+    } else {
+      cls = 'response-narrow'
+    }
+    document.getElementsByTagName('body')[0].className = cls;
+    return cls;
+  }
+  resizeWindow()
+  window.onresize = function () {
+    resizeWindow()
+  }
+
+  // 判断顶部导航条
+
+  var topNav = document.getElementById('top-nav');
+  window.onscroll = function () {
+    judgeTopNav();
+  };
+
+
+
+  /**
+   * 判断顶部导航条
+   * 如果页面没有nav-split-line样式，则默认为白底顶部导航条
+   */
+  function judgeTopNav() {
+
+    var windowTop = document.documentElement.scrollTop || document.body.scrollTop;
+    var lineBoxTop = -1;
+    try {
+      lineBoxTop = document.getElementById('nav-split-ct').offsetTop - 60;
+    } catch (e) {
+
+    }
+
+    if(topNav){
+      if (windowTop > lineBoxTop) {
+        topNav.className ="scrollDown";
+      } else {
+        topNav.className ="normal";
+      }
+    }
+  }
+  setTimeout(judgeTopNav,500);
+
+
+</script>
+
+</body>
+</html>

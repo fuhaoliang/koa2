@@ -18,6 +18,7 @@
   "homepage": "https://github.com/fuhaoliang/koa2#readme",
   "dependencies": {
     "busboy": "^0.2.14",
+    "chokidar": "^2.0.4",
     "koa-body": "^4.0.4",
     "koa-bodyparser": "^4.2.1",
     "koa-jsonp": "^2.0.2",

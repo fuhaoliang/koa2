@@ -13,5 +13,6 @@ module.exports = function(){
   // DB Interface test
   router.get('/test/user/users',User.users)
   router.post('/test/user/delete',User.deleteUser)
+  router.post('/test/user/page', User.usersPage)
   return router
 }

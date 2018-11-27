@@ -1,6 +1,20 @@
 const mongoose = require('mongoose')
 const User = require('../models/user')
 
+const findAllUsersPage = async ({ page, size }) => {
+  try {
+    let totleCount = await User.count() // 总数据
+    let data = await User.find({}).limit(size).skip((page - 1) * size)
+    return {
+      totleCount,
+      data
+    }
+  } catch (err) {
+    console.info('findAllUsersPage', err)
+    return {}
+  }
+}
+
 /**
  * 查看所以用户
  * @return {[type]} [res]
@@ -32,5 +46,6 @@ const deleteUser = async ({ _id }) => {
 
 module.exports = {
   findAllUsers,
-  deleteUser
+  deleteUser,
+  findAllUsersPage
 }

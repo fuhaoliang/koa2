@@ -2,6 +2,30 @@ const mongoose =  require('mongoose')
 const User = require('../models/user')
 const userHelper = require('../dbhelper/userHelper')
 
+const usersPage = async (ctx, next) => {
+  let { page, size } = ctx.request.body
+  console.info('ctx.request', ctx.request.body)
+  let options = {
+    page: Number(page),
+    size: Number(size)
+  }
+  let { data, totleCount } = await userHelper.findAllUsersPage(options)
+  if ( !totleCount ) {
+    ctx.body = {
+      success: false,
+      data:[]
+    }
+  } else {
+    ctx.body = {
+      success: true,
+      data:{
+        options: {...options, totleCount},
+        userData: data
+      }
+    }
+  }
+}
+
 const users = async (ctx, next) => {
   var data = await userHelper.findAllUsers()
   // var obj = await userHelper.findByPhoneNumber({phoneNumber : '13525584568'})
@@ -28,5 +52,6 @@ const deleteUser = async (ctx, next) => {
 
 module.exports = {
   users,
-  deleteUser
+  deleteUser,
+  usersPage
 }

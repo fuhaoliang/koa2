@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>simple.html</title>
+  <script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+<body>
+  <h1>simple</h1>
+  <input type="text"  id='text'/>
+  <button onclick="sendOther()">发送</button>
+  <script>
+    var socket = io('http://localhost:3000')
+    var id = parseInt(Math.random() * 1000)
+    console.info('id', id)
+    // 接收服务端单信息
+    socket.on('server message', msg => {
+      console.info('server message:' + msg)
+    })
+
+    // broadcast 
+    // socket.emit('broadcast', 'I am client broadcast')
+    socket.on('broadcast', msg => {
+      console.info('broadcast:' + msg)
+    })
+
+    // 发送信息给服务端
+    function send () {
+      var msg = $('#text').val()
+      socket.emit('client message', msg)
+    }
+
+    // homework
+    // 1: Broadcast a message to connected users when someone connects or disconnects.
+    socket.emit('userConnected', id)
+    socket.on('userConnected', msg => {
+      console.info('userConnected', msg)
+    })
+    socket.on('userDisconnect', msg => {
+      console.info('userDisconnect', msg)
+    })
+    // 2: Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
+    function sendOther () {
+      var msg = $('#text').val()
+      socket.emit('sendOther', {
+        id: id,
+        msg: msg
+      })
+    }
+    socket.on('messageOther', data => {
+      console.info(`id:${data.id},message: ${data.msg}`)
+    })
+    </script>
+</body>
+</html>

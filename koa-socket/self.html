@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      li{
+        background: #e5e5e5;
+      }
+      li:nth-of-type(odd){
+        background:#fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="box">
+      <input type="text" name="" id="" placeholder="房间号" v-model='room'>
+      <button @click="join()">加入</button>
+      <ul>
+        <li v-for="(item, index) in arr"> {{ item }}</li>
+      </ul>
+      <hr>
+      <input type="text" name="" id="" placeholder="说话" v-model='msg'>
+      <button @click="sendMsg()">发送</button>
+    </div>
+    <script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+    <script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
+    <script>
+      var socket = io('http://localhost:1234')
+      new Vue({
+        el: '#box',
+        data: {
+          room: '',
+          arr:[1,2],
+          msg: ''
+        },
+        mounted() {
+          socket.on('emitMsg', data => {
+            console.info('222')
+            this.arr.push(data)
+          })
+        },
+        methods: {
+          join () {
+            let room = this.room
+            console.info('room', room)
+            socket.emit('room', room)
+            socket.on('self_room', data => {
+              console.info('data', data)
+            })
+          },
+          sendMsg () {
+            let room = this.room
+            console.info('sendMsg', room)
+            socket.emit('sendMsg', this.msg)
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

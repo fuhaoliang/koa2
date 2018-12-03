@@ -1,4 +1,4 @@
-  const Koa = require('koa')
+const Koa = require('koa')
 const fs = require('fs')
 const Router = require('koa-router')
 const app = new Koa()

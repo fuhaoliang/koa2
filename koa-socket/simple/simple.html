@@ -11,51 +11,65 @@
 <body>
   <div id="box">
     <h1>simple</h1>
+    <h5 v-show="inputing">其他用户正在输入中...</h3>
     <input type="text"  id='text' v-model="msg"/>
-    <button onclick="sendOther()">发送</button>
+    <button @click="sendOther()">发送</button>
+    <hr>
+    <input type="text"  id='text' v-model="socketId" placeholder="socketId"/>
+    <input type="text"  id='text' v-model="secretMsg" placeholder="secretMsg"/>  
+    <button @click="sendSecret()">发送</button>
+    <h6>在线人数：{{ count }}人</h6>
   </div>
   <script>
 
     const socket = io('http://localhost:3000')
     const id = parseInt(Math.random() * 1000)
     console.info('id', id)
-    // 1: Broadcast a message to connected users when someone connects or disconnects.
-    socket.emit('userConnected', id)
-    socket.on('userConnected', msg => {
-      console.info('userConnected', msg)
-    })
-    socket.on('userDisconnect', (msg) => {
-      console.info('userDisconnect', msg)
-    })
-    // 2: Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
-    socket.on('messageOther', data => {
-      console.info(`id:${data.id},message: ${data.msg}`)
-    })
-    // 3: 正在发送消息
-    socket.on('otherSending', data => {
-      console.info('otherSending:' + data)
-    })
+    
 
-    let sendingTimeout = null
+    let inputingTimeout = null
     new Vue({
       el: '#box',
       data: {
         msg: '',
+        inputing: false,
+        count: 0,
+        socketId: '',
+        secretMsg: ''
       },
       watch: {
         // 3: 正在发送消息
         msg () {
-          if (sendingTimeout) {
-            clearTimeout(sendingTimeout)
-          }
-          socket.emit('sending', true)
-          sendingTimeout = setTimeout(() => {
-            console.info('发送完毕')
-          },2000)
+          socket.emit('inputing', true)
         }
       },
       mounted() {
-
+        // 1: Broadcast a message to connected users when someone connects or disconnects.
+        socket.emit('userConnected', id)
+        socket.on('userConnected', msg => {
+          console.info('userConnected', msg)
+        })
+        socket.on('userDisconnect', (msg) => {
+          console.info('userDisconnect', msg)
+        })
+        // 2: Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
+        socket.on('messageOther', data => {
+          console.info(`id:${data.id},message: ${data.msg}`)
+        })
+        // 3: 正在发送消息
+        socket.on('otherinputing', data => {
+          console.info('otherinputing:' + data)
+          this.inputing = data
+        })
+        // 4: 在线人数
+        socket.on('userCount', count => {
+          this.count = count
+        })
+        // 5: 私聊
+        socket.on('secret', msg => {
+          console.info('secret msg: ', msg)
+        })
+       
       },
       methods: {
         sendOther () {
@@ -63,6 +77,12 @@
           socket.emit('sendOther', {
             id: id,
             msg: msg
+          })
+        },
+        sendSecret () {
+          socket.emit('sayTo', {
+            id: this.socketId,
+            msg: this.secretMsg
           })
         }
       }

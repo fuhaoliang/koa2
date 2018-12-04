@@ -44,6 +44,10 @@ io.on('connection', (socket) => {
     console.info('sendOther')
     socket.broadcast.emit('messageOther', data)
   })
+  // 3: 正在发送消息
+  socket.on('sending', data => {
+    socket.broadcast.emit('otherSending', '正在发送中...')
+  })
 })
 
 

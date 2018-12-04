@@ -6,22 +6,75 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>simple.html</title>
   <script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
-  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <script src="https://cdn.bootcss.com/vue/2.5.17/vue.min.js"></script>
 </head>
 <body>
-  <h1>simple</h1>
-  <input type="text"  id='text'/>
-  <button onclick="sendOther()">发送</button>
+  <div id="box">
+    <h1>simple</h1>
+    <input type="text"  id='text' v-model="msg"/>
+    <button onclick="sendOther()">发送</button>
+  </div>
   <script>
-    var socket = io('http://localhost:3000')
-    var id = parseInt(Math.random() * 1000)
+
+    const socket = io('http://localhost:3000')
+    const id = parseInt(Math.random() * 1000)
     console.info('id', id)
+    // 1: Broadcast a message to connected users when someone connects or disconnects.
+    socket.emit('userConnected', id)
+    socket.on('userConnected', msg => {
+      console.info('userConnected', msg)
+    })
+    socket.on('userDisconnect', (msg) => {
+      console.info('userDisconnect', msg)
+    })
+    // 2: Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
+    socket.on('messageOther', data => {
+      console.info(`id:${data.id},message: ${data.msg}`)
+    })
+    // 3: 正在发送消息
+    socket.on('otherSending', data => {
+      console.info('otherSending:' + data)
+    })
+
+    let sendingTimeout = null
+    new Vue({
+      el: '#box',
+      data: {
+        msg: '',
+      },
+      watch: {
+        // 3: 正在发送消息
+        msg () {
+          if (sendingTimeout) {
+            clearTimeout(sendingTimeout)
+          }
+          socket.emit('sending', true)
+          sendingTimeout = setTimeout(() => {
+            console.info('发送完毕')
+          },2000)
+        }
+      },
+      mounted() {
+
+      },
+      methods: {
+        sendOther () {
+          let msg = this.msg
+          socket.emit('sendOther', {
+            id: id,
+            msg: msg
+          })
+        }
+      }
+    })
+    // homework
+
     // 接收服务端单信息
     socket.on('server message', msg => {
       console.info('server message:' + msg)
     })
 
-    // broadcast 
+    // broadcast
     // socket.emit('broadcast', 'I am client broadcast')
     socket.on('broadcast', msg => {
       console.info('broadcast:' + msg)
@@ -33,26 +86,7 @@
       socket.emit('client message', msg)
     }
 
-    // homework
-    // 1: Broadcast a message to connected users when someone connects or disconnects.
-    socket.emit('userConnected', id)
-    socket.on('userConnected', msg => {
-      console.info('userConnected', msg)
-    })
-    socket.on('userDisconnect', msg => {
-      console.info('userDisconnect', msg)
-    })
-    // 2: Don’t send the same message to the user that sent it himself. Instead, append the message directly as soon as he presses enter.
-    function sendOther () {
-      var msg = $('#text').val()
-      socket.emit('sendOther', {
-        id: id,
-        msg: msg
-      })
-    }
-    socket.on('messageOther', data => {
-      console.info(`id:${data.id},message: ${data.msg}`)
-    })
+
     </script>
 </body>
 </html>
